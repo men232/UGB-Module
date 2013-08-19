@@ -22,6 +22,7 @@ PLANED/TODO
 ==============
 * Transfer commands bans.
 * Drink vodka and play balalaika.
+* To learn English.
 
 INSTALLATION
 ==============
