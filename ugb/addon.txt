@@ -1,0 +1,10 @@
+"AddonInfo"
+{
+	"name"				"Ulysses Global Ban"
+	"version"			"0.1"
+	"up_date"			"0.3.08.2013"
+	"author_name"		"Andrew Mensky"
+	"author_email"		"men232@bigmir.com"
+	"author_url"		"http://www.gmodlive.com"
+	"info"				"Ulysses Global Ban."
+}
