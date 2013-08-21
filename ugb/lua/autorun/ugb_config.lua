@@ -1,6 +1,6 @@
 --[[ Global ban configs. ]]
 
-UGB_TABLE       = "";					-- Name of the table that will store bans. 
+UGB_TABLE       = "globalbans";			-- Name of the table that will store bans. 
 UGB_CLUSTER     = "*";					-- The name of the cluster to filter bans ( '*' - do not use a cluster ).
 UGB_DEBUG       = true; 				-- Show debug message.
 UGB_INTERVAL    = 90;					-- The interval between update ban list.
