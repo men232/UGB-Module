@@ -4,6 +4,7 @@ $dbhost       = 'localhost';	// IP Address to your database.
 $dbname       = '';				// Database on the MySQL server.
 $dbuser       = 'root';			// Username to log in on the MySQL server.
 $dbpass       = '';				// Password to log in on the MySQL server.
+$table_name   = 'globalbans';	// Name of the table that will store bans.
 $table_prefix = 'u_';			// Prefix for table name's.
 
 // Site Configs.

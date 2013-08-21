@@ -29,9 +29,9 @@ function getBanList(){
 	global $table_prefix;
 
 	if ( CLUSTER_ID != '*' ){
-		$query = ' SELECT * FROM '.$table_prefix.'globalbans'.' WHERE _Cluster = "'.mysql_escape_string(CLUSTER_ID).'"';
+		$query = ' SELECT * FROM `'.$table_prefix.$table_name.'` WHERE _Cluster = "'.mysql_escape_string(CLUSTER_ID).'"';
 	}else{
-		$query = 'SELECT * FROM `'.$table_prefix.'globalbans`';
+		$query = 'SELECT * FROM `'.$table_prefix.$table_name.'`';
 	}
 	return mysql_query($query);
 };
