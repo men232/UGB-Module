@@ -43,7 +43,7 @@
 // Global info.
 define('NAME', "UGB Module");
 define('VERSION', "0.1 beta");
-define('URL', "");
+define('URL', "http://facepunch.com/showthread.php?t=1300982");
 
 // Include 
 require_once('SourceQuery/SourceQuery.class.php');
