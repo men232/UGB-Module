@@ -27,6 +27,7 @@ function getServerList(){
 
 function getBanList(){
 	global $table_prefix;
+	global $table_name;
 
 	if ( CLUSTER_ID != '*' ){
 		$query = ' SELECT * FROM `'.$table_prefix.$table_name.'` WHERE _Cluster = "'.mysql_escape_string(CLUSTER_ID).'"';

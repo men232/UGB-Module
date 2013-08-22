@@ -182,7 +182,6 @@ function ULib.unban( steamid )
 
 	--ULib banlist
 	ULib.bans[ steamid ] = nil;
-	ULib.fileWrite( ULib.BANS_FILE, ULib.makeKeyValues( ULib.bans ) );	
 
 	local tableName = UDB:Prefixer( UGB_TABLE );
 	local cluster   = UGB_CLUSTER;
