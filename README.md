@@ -20,7 +20,8 @@ Clusters: The ability to combine your ban lists in clusters.
 
 PLANED/TODO
 ==============
-* Transfer commands bans.
+* To learn English.
+* Reverse conversion.
 * Drink vodka and play balalaika.
 
 INSTALLATION
