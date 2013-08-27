@@ -28,11 +28,15 @@ function getServerList(){
 function getBanList(){
 	global $table_prefix;
 	global $table_name;
+	global $sort_column;
+	global $sort_type;
+	
+	$sort = ($sort_column && $sort_column != '' ? ' ORDER BY '.$sort_column.' '.$sort_type : '');
 
 	if ( CLUSTER_ID != '*' ){
-		$query = ' SELECT * FROM `'.$table_prefix.$table_name.'` WHERE _Cluster = "'.mysql_escape_string(CLUSTER_ID).'"';
+		$query = ' SELECT * FROM `'.$table_prefix.$table_name.'` WHERE _Cluster = "'.mysql_escape_string(CLUSTER_ID).'"'.$sort;
 	}else{
-		$query = 'SELECT * FROM `'.$table_prefix.$table_name.'`';
+		$query = 'SELECT * FROM `'.$table_prefix.$table_name.'`'.$sort;
 	}
 	return mysql_query($query);
 };

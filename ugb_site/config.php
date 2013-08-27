@@ -7,6 +7,10 @@ $dbpass       = '';				// Password to log in on the MySQL server.
 $table_name   = 'globalbans';	// Name of the table that will store bans.
 $table_prefix = 'u_';			// Prefix for table name's.
 
+// Sort Configs.
+$sort_column  = '_Time';		// Column name that will be used to sort.
+$sort_type    = 'DESC';			// Type of sorting( ASC or DESC  ).
+
 // Site Configs.
 $site_name    = 'MySite';		// Site name.
 $site_url     = '#';			// Site url.
@@ -18,7 +22,7 @@ $time_add     = 0;  			// If you have a time zone difference between the site an
 $CLUSTERS_DATA = array(
 	// Global claster, don't remove!
 	'*' => array(
-		'title' => 'Every bans',
+		'title' => 'All bans',
 		'icon' => 'world.png',
 	),
 

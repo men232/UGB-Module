@@ -2,21 +2,8 @@
 
 require("mysqloo");
 
--- MySQL Config.
-/*UDB_ENABLE      = ulx.convar( "udb_enabled", 0, "Enable MySQL modul.", ULib.ACCESS_ADMIN );
-UDB_HOST        = ulx.convar( "udb_host", "localhost", "IP Address to your database.", ULib.ACCESS_ADMIN );
-UDB_USERNAME    = ulx.convar( "udb_username", "root", "Username to log in on the MySQL server.", ULib.ACCESS_ADMIN );
-UDB_PASSWORD    = ulx.convar( "udb_password", "", "Password to log in on the MySQL server.", ULib.ACCESS_ADMIN );
-UDB_DATABASE    = ulx.convar( "udb_database", "", "Database on the MySQL server.", ULib.ACCESS_ADMIN );
-UDB_PORT        = ulx.convar( "udb_port", 3306, "Port of the MySQL server.", ULib.ACCESS_ADMIN );
-UDB_INTERVAL    = ulx.convar( "udb_interval", 5, "The interval between trying to connect.", ULib.ACCESS_ADMIN );
-UDB_PREFIX      = ulx.convar( "udb_prefix", "u_", "Prefix for table name's.", ULib.ACCESS_ADMIN );
-UDB_DEBUG       = ulx.convar( "udb_debug", 0, "Show debug message.", ULib.ACCESS_ADMIN );
-UDB_SERVERIP    = ulx.convar( "udb_serverip", "", "", ULib.ACCESS_ADMIN );
-UDB_SERVERID    = ulx.convar( "udb_serverid", "", "", ULib.ACCESS_ADMIN );
-UDB_CONFIG_FILE = "data/ulx/udb_config.txt";*/
-
 UDB = UDB or {};
+UDB.version = "0.1b";
 
 local mysqloo = mysqloo;
 local ErrorNoHalt = ErrorNoHalt;

@@ -1,8 +1,51 @@
 -- Global ban modul for ULX --by Andrew Mensky!
 -- If this file is opened again, xgui bans will be broken.
 
+-- UGB DATA
 UGB = UGB or {};
+UGB.version = 0.2;
 UGB.ulib_reserv = UGB.ulib_reserv or {};
+
+-- UGB ENUM
+UGB_VERSION_OUT_DATE = -1;
+UGB_VERSION_NORMAL = 0;
+UGB_VERSION_NEWEST = 1;
+
+-- A function to get ugb version.
+function UGB:GetVersion() return self.version; end;
+
+-- A function to check version status.
+function UGB:VersionStatus( version_check )
+	local cur_version = tonumber( self:GetVersion() );
+	
+	if ( cur_version == version_check ) then
+		return UGB_VERSION_NORMAL;
+	elseif ( cur_version > version_check ) then
+		return UGB_VERSION_NEWEST;
+	else
+		return UGB_VERSION_OUT_DATE;
+	end;
+end;
+
+function UGB:CheckVersion()
+	http.Fetch( "https://raw.github.com/men232/UGB-Module/master/VERSION", function( html )
+		local version = tonumber( html );
+
+		if ( version ) then
+			local status = self:VersionStatus( version );
+
+			if ( status == UGB_VERSION_OUT_DATE ) then
+				MsgC( Color(255,0,0), "Your version UGB is outdated. Please update this module.\nhttps://github.com/men232/UGB-Module \n");
+			elseif ( status == UGB_VERSION_NEWEST ) then
+				UGB:Success( "Where did you get the version is newer than mine? :D" );
+			else
+				UGB:Success( "Your version ugb relevant :)" );
+			end;
+		else
+			UGB:Error( "Failed checking version." );
+		end;
+	end);
+end;
 
 -- A function to print error message by UGB.
 function UGB:Error( s )
@@ -84,8 +127,7 @@ UGB:ULibReserver( "addBan" );
 
 -- ULib.addBan - Replaces the function.
 function ULib.addBan( steamid, time, reason, name, admin )
-	//UGB:ULibCall( "addBan", steamid, time, reason, name, admin ); -- No more need
-	local strTime = time ~= 0 and string.format( "for %s minute(s)", time ) or UGB_PERMA_MSG;
+	local strTime = time ~= 0 and string.format( "for %s minute(s)", time ) or "permanently";
 	local showReason = string.format( "Banned %s: %s", strTime, reason );
 
 	local players = player.GetAll();
@@ -223,10 +265,12 @@ function ULib.refreshBans()
 	xgui.removeData( {}, "bans", xgui_data );
 	
 	ULib.bans = {};
+	local os_time = os.time();
 
 	-- Find ban in db.
 	local queryObj = UDB:Select( tableName );
 		queryObj:AddWhere( "_Cluster = ?", cluster );
+		queryObj:AddWhere( "( _Length > "..os_time.." OR _Length = 0 )", os_time );
 		queryObj:SetCallback( function( result )
 			if ( UDB:IsResult( result ) ) then
 				-- Generate a list of online players.
@@ -272,8 +316,8 @@ function ULib.refreshBans()
 
 					-- Kick if the ban was on a different server.
 					local ply = players[ steamid ];
-					if ( ply and ply:IsValid() and (t.unban == 0 or t.unban >= os.time()) ) then
-						local strTime = time ~= 0 and string.format( "for %s minute(s)", math.ceil( (t.unban - os.time())/60 ) ) or UGB_PERMA_MSG;
+					if ( ply and ply:IsValid() and (t.unban == 0 or t.unban >= os_time) ) then
+						local strTime = time ~= 0 and string.format( "for %s minute(s)", math.ceil( (t.unban - os_time)/60 ) ) or "permanently";
 						local showReason = string.format( "Banned %s: %s", strTime, t.reason );
 						
 						ULib.kick( ply, showReason );
@@ -332,6 +376,7 @@ end);
 
 -- Refresh ban list when when connecting to the db server.
 hook.Add( "UDBConnected", "UGB.DBConnected", function()
+	UGB:CheckVersion();
 	ULib.refreshBans();
 end);
 
@@ -341,14 +386,14 @@ function UDB.CheckPassword( SteamID, IP, sv_password, ClientPassword, PlayerName
 	local t = ULib.bans[ SteamID ];
 	
 	if t then
-		print(PlayerName.." ["..SteamID.."] Banned!");
+		MsgC( Color( 255, 0, 0 ), PlayerName.." ["..SteamID.."] Banned! \n" );
 		local bantime = t.unban;
 
 		if ( bantime >= os.time() ) then
 			return false, string.format( UGB_BAN_MESSAGE, ConvertTime( bantime - os.time() ), t.reason or "None" );
 		elseif bantime == 0 then
-			return false, UGB_PERMA_MSG;
-		else
+			return false, string.format( UGB_PERMA_MSG, t.reason or "None" );
+		elseif ( UGB_REMOVE_EXPIRED ) then
 			UGB:Debug("Removing expired bans!");
 			ULib.unban(SteamID);
 		end;
