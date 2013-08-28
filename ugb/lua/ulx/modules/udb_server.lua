@@ -374,6 +374,9 @@ function UDB:Connect(host, username, password, database, port)
 			end;
 
 			mysql_queue = {};
+
+			-- Let's think a few times :)
+			for i=1,10 do hook.Call( "Think" ) end;
 		end;
 
 		databaseConnection.onConnectionFailed = function( db, err )

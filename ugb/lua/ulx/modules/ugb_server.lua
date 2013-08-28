@@ -3,7 +3,7 @@
 
 -- UGB DATA
 UGB = UGB or {};
-UGB.version = 0.2;
+UGB.version = 0.21;
 UGB.ulib_reserv = UGB.ulib_reserv or {};
 
 -- UGB ENUM
@@ -247,6 +247,8 @@ end;
 UGB:ULibReserver( "refreshBans" );
 
 -- ULib.refreshBans - Replaces the function.
+local xgui_ban_module;
+
 function ULib.refreshBans()
 	UGB:Debug( "Refresh ban list." );
 
@@ -330,9 +332,15 @@ function ULib.refreshBans()
 					UGB:Debug( "Get ban: ["..cluster.."]["..data["_SteamID"].."]" );
 				end;
 
-				-- XGUI Refresh.
-				xgui.updateData( {}, "bans", xgui_data );
-				xgui.svmodules[1].postinit();
+				-- XGUI Refresh.				
+				if ( !xgui_ban_module ) then
+					for _, v in ipairs( xgui.svmodules ) do if v.name == "bans" then xgui_ban_module = v end end
+				end;
+
+				if ( xgui_ban_module ) then
+					xgui.updateData( {}, "bans", xgui_data );
+					xgui_ban_module.postinit();
+				end;
 				
 				-- This global xgui bans update! This needed because xgui can update only 1 ban in vgui.
 				ULib.queueFunctionCall( function()
@@ -381,7 +389,7 @@ hook.Add( "UDBConnected", "UGB.DBConnected", function()
 end);
 
 -- Alternative functional banid.
-function UDB.CheckPassword( SteamID, IP, sv_password, ClientPassword, PlayerName )
+function UDB.CheckBanStatus( SteamID, IP, sv_password, ClientPassword, PlayerName )
 	local SteamID = util.SteamIDFrom64(SteamID);
 	local t = ULib.bans[ SteamID ];
 	
@@ -399,7 +407,7 @@ function UDB.CheckPassword( SteamID, IP, sv_password, ClientPassword, PlayerName
 		end;
 	end;
 end;
-hook.Add( "CheckPassword", "UGB.CheckPassword", UDB.CheckPassword);
+hook.Add( "CheckPassword", "UGB.CheckBanStatus", UDB.CheckBanStatus);
 
 -- Refresh ban list timer.
 timer.Create( "UGB.RefreshTimer", UGB_INTERVAL, 0, function() ULib.refreshBans() end)
