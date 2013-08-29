@@ -3,7 +3,7 @@
 require("mysqloo");
 
 UDB = UDB or {};
-UDB.version = "0.1b";
+UDB.version = "0.11b";
 
 local mysqloo = mysqloo;
 local ErrorNoHalt = ErrorNoHalt;
@@ -376,7 +376,12 @@ function UDB:Connect(host, username, password, database, port)
 			mysql_queue = {};
 
 			-- Let's think a few times :)
-			for i=1,10 do hook.Call( "Think" ) end;
+			local mysql_poll = hook.GetTable()["Think"]["MySqlOO::Poll"];
+			
+			for i=1, 100 do
+				mysql_connection:wait();
+				mysql_poll();
+			end;
 		end;
 
 		databaseConnection.onConnectionFailed = function( db, err )

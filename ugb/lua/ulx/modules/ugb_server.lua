@@ -3,7 +3,7 @@
 
 -- UGB DATA
 UGB = UGB or {};
-UGB.version = 0.21;
+UGB.version = 0.22;
 UGB.ulib_reserv = UGB.ulib_reserv or {};
 
 -- UGB ENUM
