@@ -248,6 +248,7 @@ UGB:ULibReserver( "refreshBans" );
 
 -- ULib.refreshBans - Replaces the function.
 local xgui_ban_module;
+local connecting_plys = {};
 
 function ULib.refreshBans()
 	UGB:Debug( "Refresh ban list." );
@@ -318,14 +319,19 @@ function ULib.refreshBans()
 
 					-- Kick if the ban was on a different server.
 					local ply = players[ steamid ];
-					if ( ply and ply:IsValid() and (t.unban == 0 or t.unban >= os_time) ) then
-						local strTime = time ~= 0 and string.format( "for %s minute(s)", math.ceil( (t.unban - os_time)/60 ) ) or "permanently";
+					local valid_ply = ply and ply:IsValid();
+					
+					if ( ( valid_ply or connecting_plys[ steamid ] ) and (t.unban == 0 or t.unban >= os_time) ) then
+						local strTime = t.unban ~= 0 and string.format( "for %s minute(s)", math.ceil( (t.unban - os_time)/60 ) ) or "permanently";
 						local showReason = string.format( "Banned %s: %s", strTime, t.reason );
 						
-						ULib.kick( ply, showReason );
+						if ( valid_ply ) then
+							ULib.kick( ply, showReason );
+						end;
 						
 						-- This redundant kick code.
 						game.ConsoleCommand( string.format( "kickid %s %s\n", steamid, showReason or "" ) );
+						connecting_plys[ steamid ] = nil;
 					end;
 
 					-- Debug.
@@ -392,10 +398,10 @@ end);
 function UDB.CheckBanStatus( SteamID, IP, sv_password, ClientPassword, PlayerName )
 	local SteamID = util.SteamIDFrom64(SteamID);
 	local t = ULib.bans[ SteamID ];
-	
+		
 	if t then
 		MsgC( Color( 255, 0, 0 ), PlayerName.." ["..SteamID.."] Banned! \n" );
-		local bantime = t.unban;
+		local bantime = tonumber(t.unban) or 0;
 
 		if ( bantime >= os.time() ) then
 			return false, string.format( UGB_BAN_MESSAGE, ConvertTime( bantime - os.time() ), t.reason or "None" );
@@ -406,6 +412,8 @@ function UDB.CheckBanStatus( SteamID, IP, sv_password, ClientPassword, PlayerNam
 			ULib.unban(SteamID);
 		end;
 	end;
+	
+	connecting_plys[ SteamID ] = true;
 end;
 hook.Add( "CheckPassword", "UGB.CheckBanStatus", UDB.CheckBanStatus);
 
