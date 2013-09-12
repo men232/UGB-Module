@@ -1,5 +1,6 @@
 -- DataBase modul for ULX -- modify by Andrew Mensky and create by kurozael!
 
+include("udb_config.lua");
 require("mysqloo");
 
 UDB = UDB or {};

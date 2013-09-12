@@ -1,9 +1,11 @@
 -- Global ban modul for ULX --by Andrew Mensky!
 -- If this file is opened again, xgui bans will be broken.
 
+include("ugb_config.lua");
+
 -- UGB DATA
 UGB = UGB or {};
-UGB.version = 0.23;
+UGB.version = 0.24;
 UGB.ulib_reserv = UGB.ulib_reserv or {};
 
 -- UGB ENUM
