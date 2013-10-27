@@ -7,4 +7,4 @@ UGB_INTERVAL    = 90;					-- The interval between update ban list.
 UGB_ADMIN_NAME  = "(Console)"			-- This admin name by default.
 UGB_BAN_MESSAGE = "You've been banned from the server!\nLifted In: %s\nReason: %s";		-- This message is shown when a player join the server.
 UGB_PERMA_MSG      = "Permanently banned!\nReason: %s"; -- Message of permanently ban.
-UGB_REMOVE_EXPIRED = false;				-- Automatically remove expired bans.
+UGB_REMOVE_BANS = true;				-- If you want to save the expired bans or just unbanned players, turn off this option.

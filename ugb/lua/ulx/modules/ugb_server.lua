@@ -5,7 +5,7 @@ include("ugb_config.lua");
 
 -- UGB DATA
 UGB = UGB or {};
-UGB.version = 0.24;
+UGB.version = 0.25;
 UGB.ulib_reserv = UGB.ulib_reserv or {};
 
 -- UGB ENUM
@@ -234,12 +234,16 @@ function ULib.unban( steamid )
 		cluster = "*";
 	end;
 	
-	-- Remove ban from database.
-	local queryObj = UDB:Delete( tableName );
+	-- Remove | Exclude ban from database.
+	local queryObj = UGB_REMOVE_BANS and UDB:Delete( tableName ) or UDB:Update( tableName );
 		queryObj:AddWhere( "_SteamID = ?", steamid );
 		queryObj:AddWhere( "_Cluster = ?", cluster );
+		if ( not UGB_REMOVE_BANS ) then
+			queryObj:SetValue( "_Length", os.time()-1, true );
+		end;
 		queryObj:SetCallback( function( result )
-			UGB:Success( "Remove ban ["..UDB_SERVERID.."]["..cluster.."]: " .. steamid );
+			local action = UGB_REMOVE_BANS and "Remove" or "Exclude";
+			UGB:Success( action .. " ban ["..UDB_SERVERID.."]["..cluster.."]: " .. steamid );
 			ULib.refreshBans();
 		end);
 	queryObj:Push();
@@ -409,8 +413,8 @@ function UDB.CheckBanStatus( SteamID, IP, sv_password, ClientPassword, PlayerNam
 			return false, string.format( UGB_BAN_MESSAGE, ConvertTime( bantime - os.time() ), t.reason or "None" );
 		elseif bantime == 0 then
 			return false, string.format( UGB_PERMA_MSG, t.reason or "None" );
-		elseif ( UGB_REMOVE_EXPIRED ) then
-			UGB:Debug("Removing expired bans!");
+		else/*if ( UGB_REMOVE_EXPIRED ) then
+			UGB:Debug("Removing expired bans!");*/
 			ULib.unban(SteamID);
 		end;
 	end;
