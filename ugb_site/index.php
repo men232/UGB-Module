@@ -67,19 +67,23 @@ for ($i=0; $i < count($TMPL_ELEMENTS); $i++) {
 	};
 };
 
+if ( is_array($_GET['p']) ){
+	$_GET['p'] = null;
+};
+
+$_P = isset($_GET['p']) ? htmlspecialchars($_GET['p']) : 'home';
+
 // Page array generator.
-if ( strcmp($_GET['p'], 'srv') == 0 ){
+if ( strcmp($_P, 'srv') == 0 ){
 	define( 'HIDE_BAN_LIST', true );
-}elseif ( $_GET['p'] && $CLUSTERS_DATA[ $_GET['p'] ] ){
-	define( 'CLUSTER_ID', $_GET['p'] );
-	define( 'CLUSTER_NAME', $CLUSTERS_DATA[ $_GET['p'] ][ 'title' ] );
+}elseif ( isset($_GET['p'])&& $CLUSTERS_DATA[ $_P ] ){
+	define( 'CLUSTER_ID', $_P );
+	define( 'CLUSTER_NAME', $CLUSTERS_DATA[ $_P ][ 'title' ] );
 	define( 'HIDE_SERVER_LIST', true );
 }else{
 	define( 'CLUSTER_ID', "*" );
 	define( 'CLUSTER_NAME', $CLUSTERS_DATA[ '*' ][ 'title' ] );
 };
-
-$_P = $_GET['p'] ? $_GET['p'] : 'home';
 
 foreach ($CLUSTERS_DATA as $key => $value) {
 	$PAGES[ $key ] = $value['title'];
