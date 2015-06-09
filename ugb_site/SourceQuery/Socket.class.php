@@ -2,9 +2,12 @@
 	/**
 	 * Class written by xPaw
 	 *
-	 * Website: http://xpaw.ru
+	 * Website: https://xpaw.me
 	 * GitHub: https://github.com/xPaw/PHP-Source-Query-Class
 	 */
+	
+	use xPaw\SourceQuery\Exception\InvalidPacketException;
+	use xPaw\SourceQuery\Exception\SocketException;
 	
 	class SourceQuerySocket
 	{
@@ -48,7 +51,7 @@
 			
 			if( $ErrNo || $this->Socket === false )
 			{
-				throw new Exception( 'Could not create socket: ' . $ErrStr );
+				throw new SocketException( 'Could not create socket: ' . $ErrStr, SocketException::COULD_NOT_CREATE_SOCKET );
 			}
 			
 			Stream_Set_Timeout( $this->Socket, $Timeout );
@@ -67,9 +70,26 @@
 		
 		public function Read( $Length = 1400 )
 		{
-			$this->Buffer->Set( FRead( $this->Socket, $Length ) );
+			$this->ReadBuffer( FRead( $this->Socket, $Length ), $Length );
+		}
+		
+		protected function ReadBuffer( $Buffer, $Length )
+		{
+			$this->Buffer->Set( $Buffer );
 			
-			if( $this->Buffer->Remaining( ) > 0 && $this->Buffer->GetLong( ) == -2 )
+			if( $this->Buffer->Remaining( ) === 0 )
+			{
+				// TODO: Should we throw an exception here?
+				return;
+			}
+			
+			$Header = $this->Buffer->GetLong( );
+			
+			if( $Header === -1 ) // Single packet
+			{
+				 // We don't have to do anything
+			}
+			else if( $Header === -2 ) // Split packet
 			{
 				$Packets      = Array( );
 				$IsCompressed = false;
@@ -91,7 +111,7 @@
 						}
 						case SourceQuery :: SOURCE:
 						{
-							$IsCompressed         = ( $RequestID & 0x80000000 ) != 0;
+							$IsCompressed         = ( $RequestID & 0x80000000 ) !== 0;
 							$PacketCount          = $this->Buffer->GetByte( );
 							$PacketNumber         = $this->Buffer->GetByte( ) + 1;
 							
@@ -127,15 +147,19 @@
 						throw new RuntimeException( 'Received compressed packet, PHP doesn\'t have Bzip2 library installed, can\'t decompress.' );
 					}
 					
-					$Data = bzdecompress( $Data );
+					$Buffer = bzdecompress( $Buffer );
 					
-					if( CRC32( $Data ) != $PacketChecksum )
+					if( CRC32( $Buffer ) !== $PacketChecksum )
 					{
-						throw new SourceQueryException( 'CRC32 checksum mismatch of uncompressed packet data.' );
+						throw new InvalidPacketException( 'CRC32 checksum mismatch of uncompressed packet data.', InvalidPacketException::CHECKSUM_MISMATCH );
 					}
 				}
 				
 				$this->Buffer->Set( SubStr( $Buffer, 4 ) );
+			}
+			else
+			{
+				throw new InvalidPacketException( 'Socket read: Raw packet header mismatch. (0x' . DecHex( $Header ) . ')', InvalidPacketException::PACKET_HEADER_MISMATCH );
 			}
 		}
 		
@@ -150,6 +174,6 @@
 			
 			$this->Buffer->Set( $Data );
 			
-			return $this->Buffer->GetLong( ) == -2;
+			return $this->Buffer->GetLong( ) === -2;
 		}
 	}
